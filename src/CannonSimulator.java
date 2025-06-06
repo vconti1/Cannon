@@ -15,6 +15,8 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 
 	final int boardWidth = 1080;
 	final int boardHeight = 720;
+	final int cannonWidth = 150;
+	final int cannonHeight = 40;
 	
 	CannonSimulator(){
 		setPreferredSize(new Dimension(boardWidth,boardHeight));
@@ -27,7 +29,7 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		Graphics2D cannon = (Graphics2D) g;
 		
 		cannon.setPaint(Color.white);
-		cannon.fillRect(540, 360, boardWidth, 300);
+		cannon.fillRect(0, boardHeight - cannonHeight, cannonWidth, cannonHeight);
 		
 	}
 	
