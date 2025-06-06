@@ -1,6 +1,8 @@
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,6 +21,19 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		setBackground(Color.black);
 		setFocusable(true);
 		addKeyListener(this);
+	}
+	
+	public void draw(Graphics g) {
+		Graphics2D cannon = (Graphics2D) g;
+		
+		cannon.setPaint(Color.white);
+		cannon.fillRect(540, 360, boardWidth, 300);
+		
+	}
+	
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		draw(g);
 	}
 	
 	
