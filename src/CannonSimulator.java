@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
@@ -17,6 +18,11 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	final int boardHeight = 720;
 	final int cannonWidth = 150;
 	final int cannonHeight = 40;
+	final int pivotX = 0;
+	final int pivotY = (boardHeight - cannonHeight);
+	
+	//Hardcoded for now, but the user should be able to change angle of the cannon
+	double angle = Math.toRadians(-30); 
 	
 	CannonSimulator(){
 		setPreferredSize(new Dimension(boardWidth,boardHeight));
@@ -25,13 +31,20 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		addKeyListener(this);
 	}
 	
+	//transform with AffineTransformations
 	public void draw(Graphics g) {
+		AffineTransform tx = new AffineTransform();
 		Graphics2D cannon = (Graphics2D) g;
 		
+		
+		tx.rotate(angle, pivotX, pivotY);
+		cannon.setTransform(tx);
 		cannon.setPaint(Color.white);
 		cannon.fillRect(0, boardHeight - cannonHeight, cannonWidth, cannonHeight);
 		
+		
 	}
+	
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
