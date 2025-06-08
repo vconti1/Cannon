@@ -19,11 +19,16 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	final int boardHeight = 720;
 	final int cannonWidth = 150;
 	final int cannonHeight = 40;
+	final int baseHeight = 60;
+	final int baseWidth = 60;
 	final int pivotX = 0;
 	final int pivotY = (boardHeight - cannonHeight);
 	
-	//Hardcoded for now, but the user should be able to change angle of the cannon
-	double angle = Math.toRadians(-45); 
+	// default cannon angle
+	int cannonAngle = -45;
+	final int maxAngle = -90;
+	final int minAngle = 0;
+	
 	
 	// simulator logic
 	Timer gameLoop;
@@ -54,14 +59,26 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	
 	//transform with AffineTransformations
 	public void draw(Graphics g) {
-		AffineTransform tx = new AffineTransform();
+		
 		Graphics2D cannon = (Graphics2D) g;
+		Graphics2D cannonBase = (Graphics2D) g;
+		Graphics2D g2d = (Graphics2D) g;
 		
+		AffineTransform originalTransform = g2d.getTransform();
 		
-		tx.rotate(angle, pivotX, pivotY);
+		// rotatable cannon 
+		AffineTransform tx = new AffineTransform();
+		tx.rotate(setCannonAngle(cannonAngle), pivotX, pivotY);
 		cannon.setTransform(tx);
-		cannon.setPaint(Color.white);
+		cannon.setPaint(Color.gray);
 		cannon.fillRect(0, boardHeight - cannonHeight, cannonWidth, cannonHeight);
+		
+		//this makes it so the base does not rotate
+		g2d.setTransform(originalTransform);
+		
+		// cannon base
+		cannonBase.setPaint(Color.ORANGE);
+		cannonBase.fillRect(0, boardHeight - baseHeight, baseWidth, baseHeight);
 		
 		
 	}
@@ -70,11 +87,11 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		draw(g);
-		System.out.println("running");
+		System.out.println(cannonAngle);
 	}
 	
 	public double setCannonAngle(int newAngle) {
-		return Math.toRadians(-newAngle);
+		return Math.toRadians(newAngle);
 	}
 	
 	
@@ -89,14 +106,23 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		
 		int key = e.getKeyCode();
 		
-		// angle cannon up
-		if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
-            // if up key is pressed then add 5 to the cannon angle
-        }
-        // angle cannon down
-        if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
-            //if down key is pressed subtract 5 from cannon angle
-        }
+
+			// angle cannon up
+			if ((!(cannonAngle == maxAngle))&&(key == KeyEvent.VK_W || key == KeyEvent.VK_UP)) {
+	            // if up key is pressed then add 5 to the cannon angle
+				cannonAngle = cannonAngle - 5; //subtract since cannon angle is already negative
+				repaint();
+	        }
+	        // angle cannon down
+	        if ((!(cannonAngle == minAngle))&&(key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN)) {
+	            //if down key is pressed subtract 5 from cannon angle
+	        	cannonAngle = cannonAngle + 5;
+	        	repaint();
+	        }
+	        
+		
+		
+		
 		
 	}
 
