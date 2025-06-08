@@ -10,6 +10,7 @@ import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 
 public class CannonSimulator extends JPanel implements ActionListener, KeyListener {
@@ -22,13 +23,33 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	final int pivotY = (boardHeight - cannonHeight);
 	
 	//Hardcoded for now, but the user should be able to change angle of the cannon
-	double angle = Math.toRadians(-30); 
+	double angle = Math.toRadians(-45); 
+	
+	// simulator logic
+	Timer gameLoop;
+	Timer runSimTimer;
+	
+	
 	
 	CannonSimulator(){
 		setPreferredSize(new Dimension(boardWidth,boardHeight));
 		setBackground(Color.black);
 		setFocusable(true);
 		addKeyListener(this);
+		
+		runSimTimer = new Timer(1500,new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+			
+		});
+		
+		runSimTimer.start();
+		
+		//game timer
+		gameLoop = new Timer(1000/60,this);
+		gameLoop.start();
 	}
 	
 	//transform with AffineTransformations
@@ -49,6 +70,11 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		draw(g);
+		System.out.println("running");
+	}
+	
+	public double setCannonAngle(int newAngle) {
+		return Math.toRadians(-newAngle);
 	}
 	
 	
@@ -60,7 +86,17 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		
+		int key = e.getKeyCode();
+		
+		// angle cannon up
+		if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
+            // if up key is pressed then add 5 to the cannon angle
+        }
+        // angle cannon down
+        if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
+            //if down key is pressed subtract 5 from cannon angle
+        }
 		
 	}
 
@@ -72,7 +108,7 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		repaint();
 		
 	}
 
