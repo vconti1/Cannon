@@ -1,4 +1,4 @@
-import java.awt.BasicStroke;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -8,9 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
 
 
 public class CannonSimulator extends JPanel implements ActionListener, KeyListener {
@@ -31,8 +33,12 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	
 	
 	// simulator logic
+	ArrayList<CannonBall> cannonBalls;
 	Timer gameLoop;
 	Timer runSimTimer;
+	
+	int velocity = 500;
+	double gravity = 0;
 	
 	
 	
@@ -41,6 +47,7 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		setBackground(Color.black);
 		setFocusable(true);
 		addKeyListener(this);
+		cannonBalls = new ArrayList<>();
 		
 		runSimTimer = new Timer(1500,new ActionListener() {
 			@Override
@@ -62,6 +69,7 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		
 		Graphics2D cannon = (Graphics2D) g;
 		Graphics2D cannonBase = (Graphics2D) g;
+		Graphics2D ball = (Graphics2D) g;
 		Graphics2D g2d = (Graphics2D) g;
 		
 		AffineTransform originalTransform = g2d.getTransform();
@@ -80,7 +88,11 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		cannonBase.setPaint(Color.ORANGE);
 		cannonBase.fillRect(0, boardHeight - baseHeight, baseWidth, baseHeight);
 		
-		
+		for (CannonBall cb : cannonBalls) {
+		    cb.update();
+		    cb.draw((Graphics2D) g);
+		}
+	   
 	}
 	
 	
@@ -92,6 +104,44 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	
 	public double setCannonAngle(int newAngle) {
 		return Math.toRadians(newAngle);
+	}
+	
+	class CannonBall{
+		int x;
+		int y;
+		int radius = 50;
+		double velocityX = velocity;
+		double velocityY=velocity;
+		
+		
+		CannonBall() {
+		        this.x = boardWidth / 2;
+		        this.y = 0;
+		    }
+		
+		public void update() {
+			x+=velocityX;
+			y+=velocityY;
+			velocityY+=gravity;
+		}
+		public void draw(Graphics2D g) {
+	        g.setColor(Color.WHITE);
+	        g.fillOval(x, y, radius, radius);
+	    }
+	}
+	
+	public void spawnCannonBall() {
+		CannonBall newCannonBall = new CannonBall();
+		double angleRad = setCannonAngle(cannonAngle);  
+		
+		newCannonBall.x = (int)(pivotX + Math.cos(angleRad) * cannonWidth);
+	    newCannonBall.y = (int)(pivotY + Math.sin(angleRad) * cannonWidth);
+	    
+	    double speed = 10;
+	    newCannonBall.velocityX = speed * Math.cos(angleRad);
+	    newCannonBall.velocityY = speed * Math.sin(angleRad);
+
+	    cannonBalls.add(newCannonBall);
 	}
 	
 	
@@ -106,7 +156,6 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		
 		int key = e.getKeyCode();
 		
-
 			// angle cannon up
 			if ((!(cannonAngle == maxAngle))&&(key == KeyEvent.VK_W || key == KeyEvent.VK_UP)) {
 	            // if up key is pressed then add 5 to the cannon angle
@@ -120,10 +169,11 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	        	repaint();
 	        }
 	        
+	        if(key == KeyEvent.VK_SPACE) {
+	        	spawnCannonBall();
+	        }
 		
-		
-		
-		
+	        
 	}
 
 	@Override
@@ -135,7 +185,6 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		repaint();
-		
 	}
 
 }
