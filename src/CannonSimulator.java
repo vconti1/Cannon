@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
 
 
 public class CannonSimulator extends JPanel implements ActionListener, KeyListener {
@@ -31,10 +31,13 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	final int pivotX = 0;
 	final int pivotY = (boardHeight - cannonHeight);
 	
-	// default cannon angle
+	// default cannon attributes
 	int cannonAngle = -45;
 	final int maxAngle = -90;
 	final int minAngle = 0;
+	int cannonSpeed = 20;
+	final int minSpeed = 5;
+	final int maxSpeed = 50;
 	
 	
 	// simulator logic
@@ -45,6 +48,9 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	int velocity = 0;
 	int acceleration = 2;
 	double gravity = 0.3;
+	
+	// sound
+	Sound sound = new Sound();
 	
 	
 	
@@ -68,14 +74,13 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		//game timer
 		gameLoop = new Timer(1000/60,this);
 		gameLoop.start();
+		playMusic(0);
+		
 	}
 	
 	//transform with AffineTransformations
 	public void draw(Graphics g) {
 		
-		Graphics2D cannon = (Graphics2D) g;
-		Graphics2D cannonBase = (Graphics2D) g;
-		//Graphics2D ball = (Graphics2D) g;
 		Graphics2D g2d = (Graphics2D) g;
 		
 		AffineTransform originalTransform = g2d.getTransform();
@@ -83,16 +88,18 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		// rotatable cannon 
 		AffineTransform tx = new AffineTransform();
 		tx.rotate(setCannonAngle(cannonAngle), pivotX, pivotY);
-		cannon.setTransform(tx);
-		cannon.setPaint(Color.gray);
-		cannon.fillRect(0, boardHeight - cannonHeight, cannonWidth, cannonHeight);
+		g2d.setTransform(tx);
+		g2d.setPaint(Color.gray);
+		g2d.fillRect(0, boardHeight - cannonHeight, cannonWidth, cannonHeight);
 		
 		//this makes it so the base does not rotate
 		g2d.setTransform(originalTransform);
 		
 		// cannon base
-		cannonBase.setPaint(Color.ORANGE);
-		cannonBase.fillRect(0, boardHeight - baseHeight, baseWidth, baseHeight);
+		g2d.setPaint(Color.ORANGE);
+		g2d.fillRect(0, boardHeight - baseHeight, baseWidth, baseHeight);
+		
+		
 		
 		removeOutOfBounds();
 		
@@ -100,6 +107,15 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		    cb.update();
 		    cb.draw((Graphics2D) g);
 		}
+		
+	    // display cannon speed
+	    g2d.setColor(Color.WHITE);
+	    g2d.setFont(new Font("Arial", Font.BOLD, 25));
+	    g2d.drawString("Cannon Speed: " + cannonSpeed, 10, 30);
+	    
+	    // display cannon angle
+	    g2d.drawString("Cannon Angle: " + (-cannonAngle) + "°", 10, 60);
+	    
 	   
 	}
 	
@@ -184,11 +200,9 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		
 		newCannonBall.x = (int)(pivotX + Math.cos(angleRad) * cannonWidth);
 	    newCannonBall.y = (int)(pivotY + Math.sin(angleRad) * cannonWidth);
-	    //20 is good
-	    double speed = 35;
 	    
-	    newCannonBall.velocityX = speed * Math.cos(angleRad);
-	    newCannonBall.velocityY = speed * Math.sin(angleRad);
+	    newCannonBall.velocityX = cannonSpeed * Math.cos(angleRad);
+	    newCannonBall.velocityY = cannonSpeed * Math.sin(angleRad);
 
 	    cannonBalls.add(newCannonBall);
 	}
@@ -238,12 +252,26 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	        	cannonAngle = cannonAngle + 5;
 	        	repaint();
 	        }
-	        
 	        if(key == KeyEvent.VK_SPACE) {
 	        	spawnCannonBall();
 	        }
+	        if ((!(cannonSpeed == maxSpeed))&&(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT)) {
+	           cannonSpeed = cannonSpeed + 5;
+	        }
+	        if ((!(cannonSpeed == minSpeed))&&(key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT)) {
+		       cannonSpeed = cannonSpeed - 5;
+		    }
+	        
 		
 	        
+	}
+	
+public void playMusic(int i) {
+		
+		sound.setFile(i);
+		sound.play();
+		sound.loop();
+		
 	}
 
 	@Override
