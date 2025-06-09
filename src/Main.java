@@ -3,7 +3,7 @@ import java.awt.Graphics;
 
 public class Main {
 	public static void main(String[] args) {
-		int boardWidth = 1080;
+		int boardWidth = 1750;
 		int boardHeight = 720;
 		
 		JFrame frame = new JFrame("Cannon Simulator");

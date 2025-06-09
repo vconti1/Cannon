@@ -17,8 +17,13 @@ import javax.swing.Timer;
 
 public class CannonSimulator extends JPanel implements ActionListener, KeyListener {
 
-	final int boardWidth = 1080;
+	final int boardWidth = 1750;
 	final int boardHeight = 720;
+	final int horizontalBoundRight = boardWidth;
+	final int horizontalBoundLeft = 0;
+	final int verticalBoundTop = 0;
+	final int verticalBoundBottom = boardHeight;
+	final int outOfBounds = -100;
 	final int cannonWidth = 150;
 	final int cannonHeight = 40;
 	final int baseHeight = 60;
@@ -37,8 +42,9 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	Timer gameLoop;
 	Timer runSimTimer;
 	
-	int velocity = 500;
-	double gravity = 0;
+	int velocity = 0;
+	int acceleration = 2;
+	double gravity = 0.3;
 	
 	
 	
@@ -69,7 +75,7 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		
 		Graphics2D cannon = (Graphics2D) g;
 		Graphics2D cannonBase = (Graphics2D) g;
-		Graphics2D ball = (Graphics2D) g;
+		//Graphics2D ball = (Graphics2D) g;
 		Graphics2D g2d = (Graphics2D) g;
 		
 		AffineTransform originalTransform = g2d.getTransform();
@@ -88,6 +94,8 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		cannonBase.setPaint(Color.ORANGE);
 		cannonBase.fillRect(0, boardHeight - baseHeight, baseWidth, baseHeight);
 		
+		removeOutOfBounds();
+		
 		for (CannonBall cb : cannonBalls) {
 		    cb.update();
 		    cb.draw((Graphics2D) g);
@@ -99,7 +107,7 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		draw(g);
-		System.out.println(cannonAngle);
+		//System.out.println(cannonAngle);
 	}
 	
 	public double setCannonAngle(int newAngle) {
@@ -109,9 +117,14 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	class CannonBall{
 		int x;
 		int y;
-		int radius = 50;
+		int radius = 30;
+		int bottom;
+		int top;
+		int right;
+		int left;
+		boolean isOutOfBounds = false;
 		double velocityX = velocity;
-		double velocityY=velocity;
+		double velocityY = velocity;
 		
 		
 		CannonBall() {
@@ -120,9 +133,44 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		    }
 		
 		public void update() {
+			
+			checkOutOfBounds();
+			checkCollision();
+			
 			x+=velocityX;
 			y+=velocityY;
+			
+			// these track the positions of the edges of the cannonball for collision checking
+			bottom = y + radius;
+			top = y;
+			left = x;
+			right = x+radius;
+			
 			velocityY+=gravity;
+			
+			//System.out.println("X: "+x+" Y: "+ y);
+			//System.out.println(isOutOfBounds);
+		}
+		public void checkCollision() {
+			
+			if(bottom >= verticalBoundBottom) {
+				velocityY = -velocityY/1.5;
+			}
+			if(top>=verticalBoundTop) {
+				// not used for now
+			}
+			if(right >= horizontalBoundRight) {
+				velocityX = -velocityX;
+			}
+			if(left <= horizontalBoundLeft) {
+				//velocityX = velocityX/2;
+			}
+			
+		}
+		public void checkOutOfBounds() {
+			if(x < outOfBounds) {
+				isOutOfBounds = true;
+			}
 		}
 		public void draw(Graphics2D g) {
 	        g.setColor(Color.WHITE);
@@ -136,15 +184,37 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 		
 		newCannonBall.x = (int)(pivotX + Math.cos(angleRad) * cannonWidth);
 	    newCannonBall.y = (int)(pivotY + Math.sin(angleRad) * cannonWidth);
+	    //20 is good
+	    double speed = 35;
 	    
-	    double speed = 10;
 	    newCannonBall.velocityX = speed * Math.cos(angleRad);
 	    newCannonBall.velocityY = speed * Math.sin(angleRad);
 
 	    cannonBalls.add(newCannonBall);
 	}
 	
+	public void removeOutOfBounds() {
+		for (int i = cannonBalls.size() - 1; i >= 0; i--) {
+	        if (cannonBalls.get(i).isOutOfBounds) {
+	            cannonBalls.remove(i);
+	            System.out.println("Cannon ball despawned!");
+	        }
+	    }
+	}
 	
+
+	// check to see if any cannon ball is touching the edge of the screen or another cannonball
+	/*
+	public void checkCollision() {
+		
+		for(int i = 0; i < cannonBalls.size() - 1; i++) {
+			if(cannonBalls.get(i).x==0) {
+				cannonBalls.get(i).velocityY = (cannonBalls.get(i).velocityY)-((cannonBalls.get(i).velocityY)*2);
+			}
+		}
+		
+	}
+	*/
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
