@@ -164,7 +164,7 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 			
 			velocityY+=gravity;
 			
-			//System.out.println("X: "+x+" Y: "+ y);
+			System.out.println("X: "+x+" Y: "+ y);
 			//System.out.println(isOutOfBounds);
 		}
 		public void checkCollision() {
@@ -172,12 +172,16 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 			if(bottom >= verticalBoundBottom) {
 				velocityY = -velocityY/1.5;
 			}
-			if(top>=verticalBoundTop) {
+			
+			if(top<verticalBoundTop) {
 				// not used for now
+				velocityY = -velocityY/1.5;
 			}
+			
 			if(right >= horizontalBoundRight) {
 				velocityX = -velocityX;
 			}
+			
 			if(left <= horizontalBoundLeft) {
 				//velocityX = velocityX/2;
 			}
