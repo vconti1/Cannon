@@ -258,6 +258,8 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	        }
 	        if(key == KeyEvent.VK_SPACE) {
 	        	spawnCannonBall();
+	        	playSoundEffect(1);
+	        	
 	        }
 	        if ((!(cannonSpeed == maxSpeed))&&(key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT)) {
 	           cannonSpeed = cannonSpeed + 5;
@@ -270,12 +272,16 @@ public class CannonSimulator extends JPanel implements ActionListener, KeyListen
 	        
 	}
 	
-public void playMusic(int i) {
+	public void playMusic(int i) {
 		
 		sound.setFile(i);
 		sound.play();
 		sound.loop();
 		
+	}
+	public void playSoundEffect(int i) {
+		sound.setFile(i);
+		sound.play();
 	}
 
 	@Override

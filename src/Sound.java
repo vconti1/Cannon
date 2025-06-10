@@ -14,6 +14,7 @@ public class Sound {
 	public Sound() {
 		
 		soundURL[0] = getClass().getResource("/CannonSim.wav");
+		soundURL[1] = getClass().getResource("/cannon_fire_2.wav");
 		
 	}
 	
